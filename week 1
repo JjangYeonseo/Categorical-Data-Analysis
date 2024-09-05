@@ -1,21 +1,22 @@
 #week 1
 
-1. In a specific city, let the population proportion, 𝜋, represent those who agree with the minimum wage increase. 
-Consider two random samples, and let 𝑌 be the number of people supporting the wage increase. 
+1. In a particular city, the population proportion π supports an increase in the minimum wage.
+For a random sample of size 2, let Y = number who support an increase.
 
-a. When 𝜋=0.50, determine the possible values that Y can take and calculate the corresponding probabilities. 
-Also, find the mean and variance of the probability distribution of 𝑌. 
+a. Assuming π = 0.50, specify the probabilities for the possible values y for Y and find the distribution’s mean and standard deviation.
 
-b. Assuming π is unknown and you observe y=1, calculate the likelihood function and represent it graphically. 
-Based on the plot of the likelihood function, explain why the maximum likelihood estimator pi-hat=0.50. 
+b. Suppose you observe y = 1 and do not know π. 
+Find and sketch the likelihood function. 
+Using the plotted likelihood function, explain why the ML estimate πˆ = 0.50.
 
-2. In the 2010 General Social Survey, 486 out of 1374 respondents answered "yes" to the question of whether they would be willing to lower their standard of living to protect the environment. 
 
-a. Estimate the population proportion of those who would answer "yes." 
-Calculate the 99% confidence interval for this population proportion and interpret its meaning. 
+2. When the 2010 General Social Survey asked subjects in the US whether they would be willing to accept cuts 
+in their standard of living to protect the environment, 486 of 1374 subjects said yes.
 
-b. Conduct a significance test to determine whether the proportion of people answering "yes" is a majority or minority. 
-Provide the p-value and its interpretation. 
+a. Estimate the population proportion who would say yes. Construct and interpret a 99% confidence interval for this proportion.
+
+b. Conduct a significance test to determine whether a majority or minority of the population would say yes. 
+Report and interpret the P-value.
 
 *The Wald test, the score test, and the likelihood ratio test may yield the same conclusion regarding rejection, but the test statistics may differ.
 When choosing one of the three methods, the analyst should select the most appropriate one. 

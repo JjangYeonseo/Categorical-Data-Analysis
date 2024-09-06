@@ -9,6 +9,15 @@ b. Suppose you observe y = 1 and do not know π.
 Find and sketch the likelihood function. 
 Using the plotted likelihood function, explain why the ML estimate πˆ = 0.50.
 
+Y represents the number of individuals who support an increase in the minimum wage in a random sample of size 2. 
+Since each individual either supports or does not support the increase, we can model this as a binomial distribution.
+
+The number of trials (n) is 2.
+The probability of success (π) is 0.50 (since π=0.50). 
+Y can take values 0, 1, or 2.
+
+
+
 
 2. When the 2010 General Social Survey asked subjects in the US whether they would be willing to accept cuts 
 in their standard of living to protect the environment, 486 of 1374 subjects said yes.

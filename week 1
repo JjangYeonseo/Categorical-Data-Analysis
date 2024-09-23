@@ -9,16 +9,6 @@ b. Suppose you observe y = 1 and do not know π.
 Find and sketch the likelihood function. 
 Using the plotted likelihood function, explain why the ML estimate πˆ = 0.50.
 
-Assuming π = 0.50, we can find the probabilities for the possible values of y for Y. 
-Since we have a sample size of 2, there are three possible values for Y: 0, 1, and 2. - P(Y = 0): This is the probability that both individuals in the sample do not support an increase in the minimum wage. 
-Since π = 0.50, the probability of not supporting an increase is 1 - π = 0.50. So, P(Y = 0) = (1 - π)^2 = 0.50^2 = 0.25. - P(Y = 1): This is the probability that one individual supports an increase and the other does not.
-There are two ways this can happen: either the first individual supports and the second does not, or the first does not support and the second does.
-So, P(Y = 1) = 2 * π * (1 - π) = 2 * 0.50 * 0.50 = 0.50. - P(Y = 2): This is the probability that both individuals in the sample support an increase in the minimum wage.
-So, P(Y = 2) = π^2 = 0.50^2 = 0.25. Now, we can find the mean and standard deviation of the distribution.
-The mean is given by μ = E(Y) = Σ [y * P(Y = y)]. So, μ = 0 * P(Y = 0) + 1 * P(Y = 1) + 2 * P(Y = 2) = 0 * 0.25 + 1 * 0.50 + 2 * 0.25 = 0 + 0.50 + 0.50 = 1. The variance is given by σ^2 = E(Y^2) - μ^2.
-First, we find E(Y^2): E(Y^2) = Σ [y^2 * P(Y = y)] = 0^2 * P(Y = 0) + 1^2 * P(Y = 1) + 2^2 * P(Y = 2) = 0 * 0.25 + 1 * 0.50 + 4 * 0.25 = 0 + 0.50 + 1 = 1.50.
-Now, we can find the variance: σ^2 = E(Y^2) - μ^2 = 1.50 - 1^2 = 1.50 - 1 = 0.50. Finally, we find the standard deviation: σ = √σ^2 = √0.50 ≈ 0.71.
-
 2. When the 2010 General Social Survey asked subjects in the US whether they would be willing to accept cuts 
 in their standard of living to protect the environment, 486 of 1374 subjects said yes.
 

@@ -44,57 +44,37 @@ print(f"\nProbability of having cancer given a positive test (P(C | +)): {P_C_gi
 
 
 #2
-# Given data
-gamma = 0.01  # Prevalence of the disease (1%)
-pi_1 = 0.86   # Sensitivity (P(Y = 1 | X = 1))
-specificity = 0.88  # Specificity
-pi_2 = 1 - specificity  # False positive rate (P(Y = 1 | X = 2))
+# Given values
+gamma = 0.01        # Prevalence of the disease
+pi1 = 0.86          # Sensitivity (P(Y = 1 | X = 1))
+pi2 = 0.88          # Specificity (P(Y = 2 | X = 2))
 
-# Part (a) - Using Bayes' Theorem to find P(X = 1 | Y = 1)
-def bayes_theorem(pi_1, pi_2, gamma):
-    # Bayes' Theorem to calculate P(X = 1 | Y = 1)
-    numerator = pi_1 * gamma
-    denominator = (pi_1 * gamma) + (pi_2 * (1 - gamma))
-    return numerator / denominator
+# (a) Calculate the positive predictive value (PPV)
+numerator = pi1 * gamma
+denominator = (pi1 * gamma) + ((1 - pi2) * (1 - gamma))
+PPV = numerator / denominator
 
-# Part (b) - Find the positive predictive value (PPV)
-ppv = bayes_theorem(pi_1, pi_2, gamma)
-print(f"Positive Predictive Value (PPV): {ppv:.4f}")
+print(f"Positive Predictive Value (PPV): {PPV:.4f}")
 
-# Part (c) - Finding the joint probabilities for the 2x2 table
+# (b) Calculate joint probabilities for the 2x2 table
 
-# P(X = 1 and Y = 1) -> True positives
-true_positives = gamma * pi_1
+# P(X = 1, Y = 1): True Positive
+P_X1_Y1 = pi1 * gamma
 
-# P(X = 1 and Y = 2) -> False negatives
-false_negatives = gamma * (1 - pi_1)
+# P(X = 1, Y = 2): False Negative
+P_X1_Y2 = (1 - pi1) * gamma
 
-# P(X = 2 and Y = 1) -> False positives
-false_positives = (1 - gamma) * pi_2
+# P(X = 2, Y = 1): False Positive
+P_X2_Y1 = (1 - pi2) * (1 - gamma)
 
-# P(X = 2 and Y = 2) -> True negatives
-true_negatives = (1 - gamma) * (1 - pi_2)
+# P(X = 2, Y = 2): True Negative
+P_X2_Y2 = pi2 * (1 - gamma)
 
-# Print the 2x2 joint distribution table
-print("\nJoint Distribution Table (2x2):")
-print(f"{'':<20}{'Positive Test (Y=1)':<25}{'Negative Test (Y=2)'}")
-print(f"{'Has Disease (X=1)':<20}{true_positives:<25.4f}{false_negatives:.4f}")
-print(f"{'No Disease (X=2)':<20}{false_positives:<25.4f}{true_negatives:.4f}")
-
-# Discussion of relative sizes
-print("\nDiscussion:")
-print(f"True Positives (X=1 and Y=1): {true_positives:.4f}")
-print(f"False Negatives (X=1 and Y=2): {false_negatives:.4f}")
-print(f"False Positives (X=2 and Y=1): {false_positives:.4f}")
-print(f"True Negatives (X=2 and Y=2): {true_negatives:.4f}")
-
-# Observations on the sizes
-if false_positives > true_positives:
-    print("\nObservation: There are more false positives than true positives.")
-if true_negatives > false_negatives:
-    print("Observation: There are far more true negatives than false negatives.")
-if false_negatives < true_positives:
-    print("Observation: The number of false negatives is smaller than true positives.")
+# Display joint probabilities
+print(f"Joint Probability P(X=1, Y=1) (True Positive): {P_X1_Y1:.4f}")
+print(f"Joint Probability P(X=1, Y=2) (False Negative): {P_X1_Y2:.4f}")
+print(f"Joint Probability P(X=2, Y=1) (False Positive): {P_X2_Y1:.4f}")
+print(f"Joint Probability P(X=2, Y=2) (True Negative): {P_X2_Y2:.4f}")
 
 
 #3

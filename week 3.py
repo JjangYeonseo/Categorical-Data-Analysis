@@ -71,4 +71,19 @@ slope, intercept = np.polyfit(x, y, 1)
 print(f"Linear Regression Slope: {slope:.4f}")
 print(f"Linear Regression Intercept: {intercept:.4f}")
 
-#3
+#4
+# Given values
+x = 12  # Number of decades since 1904
+
+# Linear probability model prediction
+linear_intercept = 0.6930
+linear_slope = -0.0662
+linear_prediction = linear_intercept + linear_slope * x
+
+# Logistic regression prediction
+logistic_prediction = 0.034
+
+# Output results
+print(f"Predicted proportion of complete games for 2024 using linear model: {linear_prediction:.4f}")
+print(f"Predicted proportion of complete games for 2024 using logistic model: {logistic_prediction:.4f}")
+

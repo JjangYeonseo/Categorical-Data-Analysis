@@ -87,6 +87,47 @@ logistic_prediction = 0.034
 print(f"Predicted proportion of complete games for 2024 using linear model: {linear_prediction:.4f}")
 print(f"Predicted proportion of complete games for 2024 using logistic model: {logistic_prediction:.4f}")
 
+#5
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression, LogisticRegression
+import statsmodels.api as sm
+
+# 데이터 불러오기
+data = pd.read_csv('paste.txt', delim_whitespace=True)
+
+# 선형 확률 모델 적합
+X = data['weight']
+y = data['y']
+
+X = sm.add_constant(X)  # 상수항 추가
+model_lpm = sm.OLS(y, X).fit()
+
+print(model_lpm.summary())
+
+# 가장 높은 관측 체중에서의 예측 확률 계산
+max_weight = data['weight'].max()
+pred_prob_lpm = model_lpm.predict([1, max_weight])[0]
+
+print(f"최대 체중 {max_weight}kg에서의 예측 확률 (LPM): {pred_prob_lpm:.4f}")
+
+# 로지스틱 회귀 모델 적합
+X = data[['weight']]
+y = data['y']
+
+model_logit = LogisticRegression()
+model_logit.fit(X, y)
+
+# 최대 체중에서의 예측 확률 계산
+pred_prob_logit = model_logit.predict_proba([[max_weight]])[0][1]
+
+print(f"최대 체중 {max_weight}kg에서의 예측 확률 (로지스틱): {pred_prob_logit:.4f}")
+
+# statsmodels를 사용한 자세한 결과
+X = sm.add_constant(X)
+model_logit_sm = sm.Logit(y, X).fit()
+print(model_logit_sm.summary())
+
 #6-7
 import numpy as np
 import pandas as pd
@@ -134,4 +175,56 @@ ci_ratio = np.exp(ci_beta)
 
 print("95% CI for μB/μA:")
 print(f"({ci_ratio[0]:.4f}, {ci_ratio[1]:.4f})")
+
+#8
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from scipy import stats
+
+# 데이터 불러오기
+data = pd.read_csv('paste.txt', delim_whitespace=True)
+
+# Poisson 로그선형 모델 적합
+X = sm.add_constant(data['weight'])
+y = data['sat']
+
+model = sm.GLM(y, X, family=sm.families.Poisson())
+results = model.fit()
+
+print(results.summary())
+
+# 예측 방정식
+intercept, beta = results.params
+print(f"예측 방정식: log(μ) = {intercept:.4f} + {beta:.4f} * weight")
+
+# 평균 체중에서의 평균 반응 추정
+avg_weight = 2.44
+mean_response = np.exp(intercept + beta * avg_weight)
+print(f"평균 체중 {avg_weight}kg에서의 추정 평균 반응: {mean_response:.4f}")
+
+# β̂를 사용한 체중 효과 설명
+print(f"체중 효과 (β̂): {beta:.4f}")
+print(f"체중이 1kg 증가할 때마다 위성 수의 예상 증가율: {100 * (np.exp(beta) - 1):.2f}%")
+
+# β에 대한 95% 신뢰구간
+ci_beta = results.conf_int().loc['weight']
+print(f"β의 95% 신뢰구간: ({ci_beta[0]:.4f}, {ci_beta[1]:.4f})")
+
+# 1kg 증가의 곱셈 효과에 대한 95% 신뢰구간
+ci_mult_effect = np.exp(ci_beta)
+print(f"1kg 증가의 곱셈 효과에 대한 95% 신뢰구간: ({ci_mult_effect[0]:.4f}, {ci_mult_effect[1]:.4f})")
+
+# Wald 검정
+wald_statistic = results.tvalues['weight']**2
+wald_pvalue = stats.chi2.sf(wald_statistic, 1)
+print(f"Wald 검정 통계량: {wald_statistic:.4f}")
+print(f"Wald 검정 p-값: {wald_pvalue:.4f}")
+
+# 우도비 검정
+null_model = sm.GLM(y, sm.add_constant(data['weight'] * 0), family=sm.families.Poisson()).fit()
+lr_statistic = -2 * (null_model.llf - results.llf)
+lr_pvalue = stats.chi2.sf(lr_statistic, 1)
+print(f"우도비 검정 통계량: {lr_statistic:.4f}")
+print(f"우도비 검정 p-값: {lr_pvalue:.4f}")
 

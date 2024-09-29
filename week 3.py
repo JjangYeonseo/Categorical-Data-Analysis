@@ -1,4 +1,4 @@
-# 1
+#1
 import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency
@@ -25,6 +25,7 @@ print("Standardized Residuals:")
 print(standardized_residuals)
 
 #2
+(a)
 import numpy as np
 import pandas as pd
 from scipy.stats import fisher_exact
@@ -53,5 +54,21 @@ marginal_odds_ratio = (df["Death Penalty"].sum() / df["No Death Penalty"].sum())
 print(f"Odds Ratio for White Victims: {odds_ratio_white:.4f}")
 print(f"Odds Ratio for Black Victims: {odds_ratio_black:.4f}")
 print(f"Marginal Odds Ratio: {marginal_odds_ratio:.4f}")
+
+(b)
+# Define the scores
+income_scores = np.array([3, 10, 20, 35])
+job_satisfaction_scores = np.array([1, 3, 4, 5])
+
+# Flatten the counts for regression analysis
+y = np.repeat(job_satisfaction_scores, data.sum(axis=1))
+x = np.tile(income_scores, data.sum(axis=1))
+
+# Perform linear regression
+slope, intercept = np.polyfit(x, y, 1)
+
+# Output results
+print(f"Linear Regression Slope: {slope:.4f}")
+print(f"Linear Regression Intercept: {intercept:.4f}")
 
 #3

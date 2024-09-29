@@ -87,3 +87,51 @@ logistic_prediction = 0.034
 print(f"Predicted proportion of complete games for 2024 using linear model: {linear_prediction:.4f}")
 print(f"Predicted proportion of complete games for 2024 using logistic model: {logistic_prediction:.4f}")
 
+#6-7
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from scipy import stats
+
+# 데이터 설정
+treatment_A = [8, 7, 6, 6, 3, 4, 7, 2, 3, 4]
+treatment_B = [9, 9, 8, 14, 8, 13, 11, 5, 7, 6]
+
+data = pd.DataFrame({
+    'imperfections': treatment_A + treatment_B,
+    'treatments': ['A']*10 + ['B']*10
+})
+
+# 처리 B를 1로, 처리 A를 0으로 인코딩
+data['treatment_B'] = (data['treatments'] == 'B').astype(int)
+
+# 모델 fitting
+model = smf.glm(formula="imperfections ~ treatment_B", data=data, family=sm.families.Poisson())
+results = model.fit()
+
+# 결과 출력
+print(results.summary())
+
+beta = results.params['treatment_B']
+print(f"β̂ = {beta:.4f}")
+print(f"exp(β̂) = {np.exp(beta):.4f}")
+
+# Wald 검정
+print(results.summary().tables[1])
+
+# 우도비 검정
+null_model = smf.glm(formula="imperfections ~ 1", data=data, family=sm.families.Poisson()).fit()
+lr_statistic = -2 * (null_model.llf - results.llf)
+lr_pvalue = stats.chi2.sf(lr_statistic, 1)
+print(f"Likelihood Ratio Test p-value: {lr_pvalue:.4f}")
+
+# β에 대한 신뢰구간 계산
+ci_beta = results.conf_int().loc['treatment_B']
+
+# μB/μA에 대한 신뢰구간 (지수화)
+ci_ratio = np.exp(ci_beta)
+
+print("95% CI for μB/μA:")
+print(f"({ci_ratio[0]:.4f}, {ci_ratio[1]:.4f})")
+

@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
 # 제공된 데이터를 바탕으로 데이터셋 구성
 data = {
@@ -39,11 +40,47 @@ beta_snoring = result.params['SnoringLevel']
 odds_ratio = np.exp(beta_snoring)
 print(f"코골이 정도 1단위 증가에 따른 오즈비: {odds_ratio:.4f}")
 
+# 예측을 위한 SnoringLevel 범위 생성
+x_range = np.linspace(0, 5, 100)
+
+# 로지스틱 함수 정의
+def logistic(x, beta0, beta1):
+    return 1 / (1 + np.exp(-(beta0 + beta1 * x)))
+
+# 모델 파라미터 추출
+beta0 = result.params['intercept']
+beta1 = result.params['SnoringLevel']
+
+# 예측 확률 계산
+y_pred = logistic(x_range, beta0, beta1)
+
+# 그래프 생성
+plt.figure(figsize=(10, 6))
+plt.plot(x_range, y_pred, 'r-', label='Logistic Regression Model')
+plt.scatter(df['SnoringLevel'], df['HeartDisease_Prob'], color='blue', label='Observed Data')
+
+plt.xlabel('코골이 정도 (Snoring Level)')
+plt.ylabel('심장병 발생 확률')
+plt.title('코골이 정도에 따른 심장병 발생 확률')
+plt.legend()
+plt.grid(True)
+
+# y축 범위를 0에서 1로 설정
+plt.ylim(0, 1)
+
+plt.show()
+
+# 추가적인 해석
+print(f"모델의 절편 (beta0): {beta0:.4f}")
+print(f"코골이 정도의 계수 (beta1): {beta1:.4f}")
+print(f"코골이 정도가 1단위 증가할 때마다 심장병 발생 오즈가 {odds_ratio:.4f}배 증가합니다.")
 
 #2
-
 import pandas as pd
+import numpy as np
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
+from scipy import stats
 
 # Data: Temperatures and whether thermal distress occurred (TD)
 data = {'Temp': [66, 70, 69, 68, 67, 72, 73, 70, 57, 63, 70, 78, 67, 53, 67, 75, 70, 81, 76, 79, 75, 76, 58],
@@ -58,26 +95,61 @@ df['intercept'] = 1
 logit_model = sm.Logit(df['TD'], df[['intercept', 'Temp']])
 result = logit_model.fit()
 
-# Print summary of the model
+# a. Print summary of the model
+print("a. 로지스틱 회귀모형 적합 결과:")
 print(result.summary())
-
+print("\n해석: 기온이 증가할수록 열 문제 발생 확률이 감소하는 것으로 보입니다.")
 
 # Coefficients from the fitted model
 beta_0 = result.params['intercept']
 beta_1 = result.params['Temp']
 
-# Temperature at Challenger flight
+# b. Calculate the probability of thermal distress at 31°F
 temp_challenger = 31
-
-# Calculate the probability of thermal distress at 31°F
 prob_challenger = 1 / (1 + np.exp(-(beta_0 + beta_1 * temp_challenger)))
-print(f"Probability of thermal distress at 31°F: {prob_challenger:.4f}")
+print(f"\nb. 챌린저호 비행 시 기온(31°F)에서의 열 문제 발생 확률: {prob_challenger:.4f}")
 
-
-# Find the temperature where the probability is 0.50
+# c. Find the temperature where the probability is 0.50
 temp_50_prob = -beta_0 / beta_1
-print(f"Temperature where probability equals 0.50: {temp_50_prob:.2f}°F")
+print(f"\nc. 예측 확률이 0.50이 되는 기온: {temp_50_prob:.2f}°F")
 
+# Linear approximation
+delta = 0.01
+prob_plus_1 = 1 / (1 + np.exp(-(beta_0 + beta_1 * (temp_50_prob + 1))))
+slope = (prob_plus_1 - 0.5) / 1
+
+print(f"   선형근사식: P(열 문제) ≈ 0.5 + {slope:.4f} * (온도 - {temp_50_prob:.2f})")
+
+# d. Interpret the effect of temperature on the odds of thermal distress
+odds_ratio = np.exp(beta_1)
+print(f"\nd. 오즈비: {odds_ratio:.4f}")
+print(f"   해석: 기온이 1°F 증가할 때마다 열 문제 발생 오즈가 {odds_ratio:.4f}배가 됩니다.")
+
+# e. Hypothesis test for the effect of temperature
+p_value = result.pvalues['Temp']
+print(f"\ne. 가설검정 결과:")
+print(f"   p-value: {p_value:.4f}")
+print("   결론: " + ("기온의 효과가 없다는 가설을 기각합니다." if p_value < 0.05 else "기온의 효과가 없다는 가설을 기각할 수 없습니다."))
+
+# Visualization
+plt.figure(figsize=(10, 6))
+plt.scatter(df['Temp'], df['TD'], color='blue', label='Observed Data')
+
+# Generate points for the logistic curve
+temp_range = np.linspace(df['Temp'].min(), df['Temp'].max(), 100)
+prob_range = 1 / (1 + np.exp(-(beta_0 + beta_1 * temp_range)))
+
+plt.plot(temp_range, prob_range, color='red', label='Logistic Regression Model')
+plt.plot([temp_challenger, temp_challenger], [0, prob_challenger], 'g--', label='Challenger Temperature')
+plt.plot([temp_50_prob, temp_50_prob], [0, 0.5], 'k--', label='P=0.50 Temperature')
+
+plt.xlabel('Temperature (°F)')
+plt.ylabel('Probability of Thermal Distress')
+plt.title('Logistic Regression: Temperature vs Probability of Thermal Distress')
+plt.legend()
+plt.grid(True)
+
+plt.show()
 
 #3
 from scipy.stats import chi2

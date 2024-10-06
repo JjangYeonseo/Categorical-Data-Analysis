@@ -59,9 +59,9 @@ plt.figure(figsize=(10, 6))
 plt.plot(x_range, y_pred, 'r-', label='Logistic Regression Model')
 plt.scatter(df['SnoringLevel'], df['HeartDisease_Prob'], color='blue', label='Observed Data')
 
-plt.xlabel('코골이 정도 (Snoring Level)')
-plt.ylabel('심장병 발생 확률')
-plt.title('코골이 정도에 따른 심장병 발생 확률')
+plt.xlabel('Snoring Level')
+plt.ylabel('HeartDisease_Prob')
+plt.title('probability of heart disease according to snoring degree')
 plt.legend()
 plt.grid(True)
 

@@ -1,6 +1,5 @@
 #1
 import pandas as pd
-import statsmodels.api as sm
 import numpy as np
 
 # 데이터프레임 생성
@@ -10,58 +9,33 @@ data = {
     'T': [1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
     'J': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
     'Yes': [10, 8, 5, 7, 3, 2, 4, 15, 17, 3, 6, 4, 1, 5, 1, 6],
-    'No': [67, 3, 101, 72, 20, 16, 27, 65, 123, 49, 132, 102, 12, 30, 30, 73]
+    'No': [67, 34, 101, 72, 20, 16, 27, 65, 123, 49, 132, 102, 12, 30, 30, 73]
 }
 
 df = pd.DataFrame(data)
 
-# 독립 변수와 종속 변수 정의
-X = df[['E', 'S', 'T', 'J']]  # 독립 변수
-y = df['Yes'] / (df['Yes'] + df['No'])  # 종속 변수(음주 확률)
+# 로그오즈 함수 적용하여 예측값 계산
+def calculate_logit(E, S, T, J):
+    return -2.4668 + 0.5550 * E - 0.4292 * S + 0.6873 * T - 0.2022 * J
 
-# 상수항 추가
-X = sm.add_constant(X)
+# 음주 확률 계산
+df['logit'] = df.apply(lambda row: calculate_logit(row['E'], row['S'], row['T'], row['J']), axis=1)
+df['pi_hat'] = np.exp(df['logit']) / (1 + np.exp(df['logit']))
 
-# 로지스틱 회귀 모델 적합
-model = sm.GLM(y, X, family=sm.families.Binomial())
-result = model.fit()
+# 결과 출력
+print(df[['E', 'S', 'T', 'J', 'pi_hat']])
 
-# 모델 요약 출력
-print(result.summary())
+# 음주 확률이 가장 높은 MBTI 유형 찾기
+highest_prob = df['pi_hat'].max()
+highest_mbti_idx = df['pi_hat'].idxmax()
 
-# 예측 확률 계산
-df['predicted_prob'] = result.predict(X)
+# MBTI 유형을 문자로 변환
+mbti_types = ['ESTJ', 'ESTP', 'ESFJ', 'ESFP', 'ENTJ', 'ENTP', 'ENFJ', 'ENFP', 
+              'ISTJ', 'ISTP', 'ISFJ', 'ISFP', 'INTJ', 'INTP', 'INFJ', 'INFP']
 
-# 각 MBTI 유형에 대한 예측 확률 출력
-print(df[['E', 'S', 'T', 'J', 'predicted_prob']])
+highest_mbti = mbti_types[highest_mbti_idx]
 
-# MBTI 유형에 대한 예측 확률 계산
-mbti_types = {
-    'ESTJ': [1, 1, 0, 0],
-    'ESTP': [1, 1, 0, 1],
-    'ESFJ': [1, 0, 0, 0],
-    'ESFP': [1, 0, 0, 1],
-    'ISTJ': [0, 1, 0, 0],
-    'ISTP': [0, 1, 0, 1],
-    'ISFJ': [0, 0, 0, 0],
-    'ISFP': [0, 0, 0, 1],
-    'ENTJ': [1, 1, 1, 0],
-    'ENTP': [1, 1, 1, 1],
-    'ENFJ': [1, 0, 1, 0],
-    'ENFP': [1, 0, 1, 1],
-    'INTJ': [0, 1, 1, 0],
-    'INTP': [0, 1, 1, 1],
-    'INFP': [0, 0, 1, 1],
-    'INFJ': [0, 0, 1, 0]
-}
-
-# 각 MBTI 유형의 예측 확률 계산 및 출력
-print("\n각 MBTI 유형의 음주 확률 예측:")
-for mbti, values in mbti_types.items():
-    values_with_const = [1] + values  # 상수항 추가
-    prob = result.predict(values_with_const)
-    print(f"{mbti} 유형의 음주 확률은 {prob[0]}입니다.")
-
+print(f"음주 확률이 가장 높은 MBTI 유형은 {highest_mbti}이며, 확률은 {highest_prob:.4f}입니다.")
 
 #2
 import pandas as pd

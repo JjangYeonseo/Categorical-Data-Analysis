@@ -14,6 +14,23 @@ data = {
 
 df = pd.DataFrame(data)
 
+# 종속 변수(Y) 생성 (Yes/No 합계로 음주 여부 비율)
+df['Drink'] = df['Yes'] / (df['Yes'] + df['No'])
+
+# 독립 변수와 종속 변수 설정
+X = df[['E', 'S', 'T', 'J']]
+y = df['Drink']
+
+# 상수항 추가
+X = sm.add_constant(X)
+
+# 로지스틱 회귀 모델 적합
+model = sm.Logit(y, X)
+result = model.fit()
+
+# 결과 요약
+print(result.summary())
+
 # 로그오즈 함수 적용하여 예측값 계산
 def calculate_logit(E, S, T, J):
     return -2.4668 + 0.5550 * E - 0.4292 * S + 0.6873 * T - 0.2022 * J

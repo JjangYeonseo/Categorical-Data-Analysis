@@ -1,6 +1,7 @@
 #1
-import pandas as pd
+'''import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 
 # 데이터프레임 생성
 data = {
@@ -53,6 +54,7 @@ mbti_types = ['ESTJ', 'ESTP', 'ESFJ', 'ESFP', 'ENTJ', 'ENTP', 'ENFJ', 'ENFP',
 highest_mbti = mbti_types[highest_mbti_idx]
 
 print(f"음주 확률이 가장 높은 MBTI 유형은 {highest_mbti}이며, 확률은 {highest_prob:.4f}입니다.")
+
 
 #2
 import pandas as pd
@@ -137,4 +139,50 @@ plt.legend(loc="lower right")
 plt.show()
 
 # AUC 출력
-print(f"AUC: {roc_auc}")
+print(f"AUC: {roc_auc}")'''
+
+import pandas as pd
+import statsmodels.api as sm
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+
+# Step 1: 데이터 불러오기 (파일 포맷에 맞게 구분자를 조정하세요)
+data = pd.read_csv('data.txt', delimiter=r'\s+')
+
+# Step 2: 독립 변수와 종속 변수 선택
+X = data['weight']  # 예측 변수
+y = data['y']       # 종속 변수
+
+# Step 3: 로지스틱 회귀 모델을 위한 상수 추가 (절편)
+X = sm.add_constant(X)
+
+# Step 4: 로지스틱 회귀 모델 적합
+model = sm.Logit(y, X)
+result = model.fit()
+
+# Step 5: 모델 요약 출력 (회귀 분석 결과)
+print(result.summary())
+
+# Step 6: 예측값 생성
+data['predicted_prob'] = result.predict(X)
+
+# Step 7: y = 1인 표본 비율을 기준으로 분류 (분계점)
+prop = sum(y) / len(y)  # y = 1인 표본 비율 계산
+data['predicted_class'] = (data['predicted_prob'] >= prop).astype(int)
+
+# Step 8: 혼동 행렬 생성
+cm = confusion_matrix(y, data['predicted_class'])
+print(f"Confusion Matrix:\n{cm}")
+
+# Step 9: ROC 곡선과 AUC 계산 및 시각화
+fpr, tpr, thresholds = roc_curve(y, data['predicted_prob'])
+plt.plot(fpr, tpr, label='ROC Curve')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.legend(loc='best')
+plt.show()
+
+# AUC 계산
+auc = roc_auc_score(y, data['predicted_prob'])
+print(f"AUC: {auc}")
